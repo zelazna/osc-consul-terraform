@@ -13,8 +13,8 @@ export OUTSCALE_SECRETKEYID=[OUTSCALE_SECRETKEYID]
 for creating identical machine images for multiple platforms from a single 
 source configuration. The Terraform templates included in this repo reference a 
 publicly available Amazon machine image (AMI) by default. The AMI can be customized 
-through modifications to the [build configuration script](../packer/scripts/setup.sh) 
-and [template.pkr.hcl](template.pkr.hcl).
+through modifications to the [build configuration script](packer/scripts/setup.sh) 
+and [template.pkr.hcl](packer/template.pkr.hcl).
 
 Use the following command to build the AMI:
 
