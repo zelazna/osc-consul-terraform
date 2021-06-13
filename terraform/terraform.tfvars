@@ -1,0 +1,8 @@
+name          = "nomad"
+ami           = "ami-6d14760c"
+vm_type       = "t2.medium"
+server_count  = "2"
+client_count  = "4"
+#access_key_id       = "MyAccessKey"
+#secret_key_id       = "MySecretKey"
+whitelist_ip  = "0.0.0.0/0"
