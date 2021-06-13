@@ -1,18 +1,10 @@
-# Provision a Nomad cluster on AWS
+# Provision a Nomad cluster on Outscale
 
-## Pre-requisites
-
-To get started, create the following:
-
-- AWS account
-- [API access keys](http://aws.amazon.com/developers/access-keys/)
-- [SSH key pair](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
-
-## Set the AWS environment variables
+## Set the Credentials environment variables
 
 ```bash
-$ export AWS_ACCESS_KEY_ID=[AWS_ACCESS_KEY_ID]
-$ export AWS_SECRET_ACCESS_KEY=[AWS_SECRET_ACCESS_KEY]
+$ export OUTSCALE_ACCESSKEYID=[OUTSCALE_ACCESSKEYID]
+$ export OUTSCALE_SECRETKEYID=[OUTSCALE_SECRETKEYID]
 ```
 
 ## Build an AWS machine image with Packer
@@ -21,45 +13,42 @@ $ export AWS_SECRET_ACCESS_KEY=[AWS_SECRET_ACCESS_KEY]
 for creating identical machine images for multiple platforms from a single 
 source configuration. The Terraform templates included in this repo reference a 
 publicly available Amazon machine image (AMI) by default. The AMI can be customized 
-through modifications to the [build configuration script](../shared/scripts/setup.sh) 
-and [packer.json](packer.json).
+through modifications to the [build configuration script](../packer/scripts/setup.sh) 
+and [template.pkr.hcl](template.pkr.hcl).
 
 Use the following command to build the AMI:
 
 ```bash
-$ packer build packer.json
+$ packer build template.pkr.hcl
 ```
 
 ## Provision a cluster with Terraform
 
-`cd` to an environment subdirectory:
-
 ```bash
-$ cd env/us-east
+cd terraform
+export TF_VAR_access_key_id=$OUTSCALE_ACCESSKEYID
+export TF_VAR_secret_key_id=$OUTSCALE_SECRETKEYID
+export TF_VAR_region="eu-west-2"
 ```
 
-Update `terraform.tfvars` with your SSH key name and your AMI ID if you created 
+Update `terraform.tfvars` with your AMI ID if you created 
 a custom AMI:
 
 ```bash
-region                  = "us-east-1"
 ami                     = "ami-09730698a875f6abd"
 instance_type           = "t2.medium"
-key_name                = "KEY_NAME"
 server_count            = "3"
 client_count            = "4"
 ```
 
-Modify the `region`, `instance_type`, `server_count`, and `client_count` variables
+Modify the `instance_type`, `server_count`, and `client_count` variables
 as appropriate. At least one client and one server are required. You can 
 optionally replace the Nomad binary at runtime by adding the `nomad_binary` 
 variable like so:
 
 ```bash
-region                  = "us-east-1"
 ami                     = "ami-09730698a875f6abd"
 instance_type           = "t2.medium"
-key_name                = "KEY_NAME"
 server_count            = "3"
 client_count            = "4"
 nomad_binary            = "https://releases.hashicorp.com/nomad/0.7.0/nomad_0.7.0_linux_amd64.zip"
@@ -69,23 +58,18 @@ Provision the cluster:
 
 ```bash
 $ terraform init
-$ terraform get
 $ terraform plan
 $ terraform apply
 ```
 
 ## Access the cluster
 
-SSH to one of the servers using its public IP:
+SSH to the bastion using its public IP:
 
 ```bash
-$ ssh -i /path/to/private/key ubuntu@PUBLIC_IP
+$ ssh -i /path/to/private/key outscale@PUBLIC_IP
 ```
 
 The infrastructure that is provisioned for this test environment is configured to 
 allow all traffic over port 22. This is obviously not recommended for production 
 deployments.
-
-## Next Steps
-
-Click [here](../README.md#test) for next steps.
