@@ -1,13 +1,13 @@
 # Provision a Nomad cluster on Outscale
 
-## Set the Credentials environment variables
+## Set the credentials environment variables
 
 ```bash
-$ export OUTSCALE_ACCESSKEYID=[OUTSCALE_ACCESSKEYID]
-$ export OUTSCALE_SECRETKEYID=[OUTSCALE_SECRETKEYID]
+export OUTSCALE_ACCESSKEYID=[OUTSCALE_ACCESSKEYID]
+export OUTSCALE_SECRETKEYID=[OUTSCALE_SECRETKEYID]
 ```
 
-## Build an AWS machine image with Packer
+## Build an Outscale machine image with Packer
 
 [Packer](https://www.packer.io/intro/index.html) is HashiCorp's open source tool 
 for creating identical machine images for multiple platforms from a single 
@@ -19,7 +19,7 @@ and [template.pkr.hcl](template.pkr.hcl).
 Use the following command to build the AMI:
 
 ```bash
-$ packer build template.pkr.hcl
+packer build template.pkr.hcl
 ```
 
 ## Provision a cluster with Terraform
@@ -57,9 +57,9 @@ nomad_binary            = "https://releases.hashicorp.com/nomad/0.7.0/nomad_0.7.
 Provision the cluster:
 
 ```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
+terraform init
+terraform plan
+terraform apply
 ```
 
 ## Access the cluster
