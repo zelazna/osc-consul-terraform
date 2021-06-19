@@ -3,8 +3,8 @@
 ## Set the credentials environment variables
 
 ```bash
-export OUTSCALE_ACCESSKEYID=[OUTSCALE_ACCESSKEYID]
-export OUTSCALE_SECRETKEYID=[OUTSCALE_SECRETKEYID]
+export PKR_VAR_access_key=[OUTSCALE_ACCESSKEYID]
+export PKR_VAR_secret_key=[OUTSCALE_SECRETKEYID]
 ```
 
 ## Build an Outscale machine image with Packer

@@ -17,12 +17,10 @@
 # https://www.packer.io/docs/templates/hcl_templates/variables#type-constraints for more info.
 variable "access_key" {
   type    = string
-  default = "${env("OUTSCALE_ACCESSKEYID")}"
 }
 
 variable "secret_key" {
   type    = string
-  default = "${env("OUTSCALE_SECRETKEYID")}"
 }
 
 # "timestamp" template function replacement
@@ -37,15 +35,7 @@ source "osc-bsu" "nomad_vm" {
   omi_name   = "consul_stack ${local.timestamp}"
   region     = "eu-west-2"
   secret_key = "${var.secret_key}"
-  source_omi_filter {
-    filters = {
-      architecture        = "x86_64"
-      name                = "Ubuntu-18.04-2021.02.04-0"
-      virtualization-type = "hvm"
-    }
-    most_recent = true
-    owners      = ["188187048142"]
-  }
+  source_omi = "ami-538af795"
   ssh_username = "outscale"
   vm_type      = "t2.medium"
 }
@@ -62,12 +52,12 @@ build {
 
   provisioner "file" {
     destination = "/ops/config"
-    source      = "../config"
+    source      = "config"
   }
 
   provisioner "file" {
     destination = "/ops/scripts"
-    source      = "../scripts"
+    source      = "scripts"
   }
 
   provisioner "shell" {
