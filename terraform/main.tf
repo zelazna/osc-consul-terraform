@@ -19,7 +19,6 @@ locals {
     retry_join   = trim(chomp(join(" ", formatlist("%s=%s ", keys(var.retry_join), values(var.retry_join)))), " ")
     server_count = var.server_count
     region       = var.region
-    nomad_binary = var.nomad_binary
   }
 }
 
@@ -36,7 +35,12 @@ resource "outscale_vm" "server" {
   placement_subregion_name = "${var.region}a"
   count                    = var.server_count
   subnet_id                = outscale_subnet.nomad_subnet.subnet_id
-  user_data                = templatefile("${path.root}/user-data-server.sh", local.data)
+  user_data                = data.cloudinit_config.server.rendered
+
+  tags {
+    key   = "name"
+    value = "server-${count.index}"
+  }
 }
 
 resource "outscale_vm" "client" {
@@ -47,7 +51,12 @@ resource "outscale_vm" "client" {
   placement_subregion_name = "${var.region}a"
   count                    = var.client_count
   subnet_id                = outscale_subnet.nomad_subnet.subnet_id
-  user_data                = templatefile("${path.root}/user-data-client.sh", local.data)
+  user_data                = data.cloudinit_config.client.rendered
+
+  tags {
+    key   = "name"
+    value = "client-${count.index}"
+  }
 }
 
 resource "outscale_vm" "bastion" {
@@ -61,5 +70,10 @@ resource "outscale_vm" "bastion" {
   tags {
     key   = "osc.fcu.eip.auto-attach"
     value = outscale_public_ip.bastion_ip.public_ip
+  }
+
+  tags {
+    key   = "name"
+    value = "bastion"
   }
 }

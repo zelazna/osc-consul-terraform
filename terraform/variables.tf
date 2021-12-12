@@ -51,12 +51,6 @@ variable "retry_join" {
   }
 }
 
-variable "nomad_binary" {
-  description = "Used to replace the machine image installed Nomad binary."
-  default     = "none"
-}
-
-
 variable "access_key_id" {
 
 }

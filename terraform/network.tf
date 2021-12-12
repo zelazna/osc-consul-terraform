@@ -4,7 +4,7 @@ resource "outscale_net" "nomad_vpc" {
 
 resource "outscale_subnet" "nomad_subnet" {
   net_id         = outscale_net.nomad_vpc.net_id
-  ip_range       = "10.0.0.0/24"
+  ip_range       = "10.0.1.0/24"
   subregion_name = "${var.region}a"
 }
 

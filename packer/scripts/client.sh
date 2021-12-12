@@ -2,7 +2,7 @@
 
 set -e
 
-CONFIGDIR=/ops/shared/config
+CONFIGDIR=/ops/config
 
 CONSULCONFIGDIR=/etc/consul.d
 NOMADCONFIGDIR=/etc/nomad.d
@@ -13,34 +13,22 @@ HOME_DIR=ubuntu
 sleep 15
 
 DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'`)
-CLOUD=$1
-RETRY_JOIN=$2
-NOMAD_BINARY=$3
+RETRY_JOIN=$1
 
 # Get IP from metadata service
-IP_ADDRESS=$(curl http://instance-data/latest/meta-data/local-ipv4)
-# IP_ADDRESS="$(/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')"
+IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 # Consul
 sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/consul_client.json
 sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul_client.json
 sudo cp $CONFIGDIR/consul_client.json $CONSULCONFIGDIR/consul.json
-sudo cp $CONFIGDIR/consul_$CLOUD.service /etc/systemd/system/consul.service
+sudo cp $CONFIGDIR/consul.service /etc/systemd/system/consul.service
 
 sudo systemctl enable consul.service
 sudo systemctl start consul.service
 sleep 10
 
 # Nomad
-
-## Replace existing Nomad binary if remote file exists
-if [[ `wget -S --spider $NOMAD_BINARY  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then
-  curl -L $NOMAD_BINARY > nomad.zip
-  sudo unzip -o nomad.zip -d /usr/local/bin
-  sudo chmod 0755 /usr/local/bin/nomad
-  sudo chown root:root /usr/local/bin/nomad
-fi
-
 sudo cp $CONFIGDIR/nomad_client.hcl $NOMADCONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
