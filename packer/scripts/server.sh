@@ -13,17 +13,28 @@ HOME_DIR=ubuntu
 # Wait for network
 sleep 15
 
-DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'`)
+DOCKER_BRIDGE_IP_ADDRESS=($(ifconfig docker0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'))
 SERVER_COUNT=$1
 RETRY_JOIN=$2
 
 IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
 
 # Consul
-sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/consul.json
-sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/consul.json
-sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul.json
-sudo cp $CONFIGDIR/consul.json $CONSULCONFIGDIR
+sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/consul.hcl
+sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/consul.hcl
+
+# If ip adress is the same as the leader node just remove the retry join
+if [[ "$RETRY_JOIN" == "$IP_ADDRESS" ]]
+then
+    echo "Cluster Leader"
+    sed -i "s/retry_join = \"RETRY_JOIN\"//g" $CONFIGDIR/consul.hcl
+else
+    sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul.hcl
+fi
+
+
+sudo cp $CONFIGDIR/consul.hcl $CONSULCONFIGDIR
+
 sudo cp $CONFIGDIR/consul.service /etc/systemd/system/consul.service
 
 sudo systemctl enable consul.service

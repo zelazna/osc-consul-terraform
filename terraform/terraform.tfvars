@@ -1,5 +1,5 @@
 name         = "nomad"
-ami          = "ami-ab726422"
+ami          = "ami-a33d79dd"
 vm_type      = "t2.medium"
 server_count = "1"
 client_count = "1"

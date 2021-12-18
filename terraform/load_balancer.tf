@@ -1,7 +1,6 @@
 resource "outscale_load_balancer" "server_lb" {
   load_balancer_name = "${var.name}-server-lb"
-  subregion_names    = ["${var.region}a"]
-  subnets            = [outscale_subnet.nomad_subnet.subnet_id]
+  subnets            = [outscale_subnet.public_subnet.subnet_id]
 
   listeners {
     backend_port           = 4646
