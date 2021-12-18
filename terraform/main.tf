@@ -23,7 +23,7 @@ resource "outscale_vm" "server" {
   vm_type                  = var.vm_type
   keypair_name             = outscale_keypair.bastion.keypair_name
   placement_subregion_name = "${var.region}a"
-  count                    = var.client_count
+  count                    = var.server_count
   user_data = base64encode(<<EOF
     sudo bash /ops/scripts/server.sh "${var.server_count}" "${var.retry_join}"
     EOF
