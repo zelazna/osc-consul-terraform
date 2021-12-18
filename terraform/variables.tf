@@ -39,23 +39,9 @@ variable "client_count" {
   default     = "4"
 }
 
-# FIXME
 variable "retry_join" {
-  description = "Used by Consul to automatically form a cluster."
-  type        = map(string)
-
-  default = {
-    provider  = "aws"
-    tag_key   = "ConsulAutoJoin"
-    tag_value = "auto-join"
-  }
+  default = "10.0.2.8"
 }
-
-variable "nomad_binary" {
-  description = "Used to replace the machine image installed Nomad binary."
-  default     = "none"
-}
-
 
 variable "access_key_id" {
 

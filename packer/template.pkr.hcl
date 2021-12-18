@@ -60,7 +60,12 @@ build {
     source      = "scripts"
   }
 
+  provisioner "file" {
+    destination = "/ops/install"
+    source      = "install"
+  }
+
   provisioner "shell" {
-    script = "scripts/setup.sh"
+    script = "install/setup.sh"
   }
 }
